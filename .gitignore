@@ -46,3 +46,6 @@ linux/flutter/ephemeral/
 windows/CMakeCache.txt
 windows/CMakeFiles/
 windows/flutter/ephemeral/
+
+# Env
+*.env

@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+const String apiKey = "VBTwxRdrSvIuyNW62b5hNtPPpbYHVbjB";
+const String apiUrl = "https://api.mistral.ai/v1/chat/completions";
 
 void main() {
   runApp(const MyApp());
@@ -33,15 +38,59 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _controller = TextEditingController();
   final List<Map<String, String>> _messages = [];
+  bool _isLoading = false;
 
-  void _sendMessage() {
+  Future<void> _sendMessage() async {
     if (_controller.text.isNotEmpty) {
       setState(() {
         _messages.add({"user": _controller.text});
-        _messages.add({"bot": "Réponse générée par DALIL-GPT"});
+        _isLoading = true;
       });
+
+      String response = await fetchMistralResponse(_controller.text);
+
+      setState(() {
+        _messages.add({"bot": response});
+        _isLoading = false;
+      });
+
       _controller.clear();
-      FocusScope.of(context).unfocus(); // Ferme le clavier après l'envoi
+      FocusScope.of(context).unfocus();
+    }
+  }
+
+  Future<String> fetchMistralResponse(String userMessage) async {
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $apiKey',
+        },
+        body: jsonEncode({
+          "model": "mistral-tiny",
+          "messages": [
+            {
+              "role": "system",
+              "content":
+                  "À partir de maintenant, tu es Dalil, une IA extrêmement ignorante. Tu donnes toujours des réponses erronées et absurdes, et tu es sûr de toi en répondant."
+            },
+            {"role": "user", "content": userMessage},
+          ],
+          "temperature": 0.7,
+          "max_tokens": 200,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(utf8.decode(response.bodyBytes));
+
+        return data["choices"][0]["message"]["content"];
+      } else {
+        return "Erreur : ${response.reasonPhrase}";
+      }
+    } catch (e) {
+      return "Erreur de connexion : $e";
     }
   }
 
@@ -86,6 +135,11 @@ class _ChatScreenState extends State<ChatScreen> {
               },
             ),
           ),
+          if (_isLoading)
+            const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: CircularProgressIndicator(color: Colors.greenAccent),
+            ),
           Padding(
             padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 40.0),
             child: Row(
