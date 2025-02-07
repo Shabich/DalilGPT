@@ -1,0 +1,48 @@
+# Flutter/Dart
+.dart_tool/
+.packages
+build/
+**/Generated.xcconfig
+
+# IntelliJ IDEA/Android Studio
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# VS Code
+.vscode/
+
+# macOS
+*.DS_Store
+
+# Pub dependencies
+pubspec.lock
+
+# Flutter specific
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# Android
+android/.gradle/
+android/app/debug.keystore
+
+# iOS
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Flutter.podspec
+ios/Flutter/App.framework
+
+# Web
+target/
+web/.dart_tool/
+
+# Linux
+linux/CMakeCache.txt
+linux/CMakeFiles/
+linux/flutter/ephemeral/
+
+# Windows
+windows/CMakeCache.txt
+windows/CMakeFiles/
+windows/flutter/ephemeral/
